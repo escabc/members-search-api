@@ -1,0 +1,106 @@
+service: members-search-api
+
+frameworkVersion: ">=1.5.0 <2.0.0"
+
+plugins:
+  - serverless-dynamodb-local
+  - serverless-offline
+  - serverless-build-plugin
+
+custom:
+  dynamodb:
+    start:
+      port: 8000
+      inMemory: true
+      migrate: true
+  serverless-offline:
+    babelOptions:
+      presets: ['es2015', 'stage-0']
+
+provider:
+  name: aws
+  runtime: nodejs6.10
+  region: us-west-2
+  stage: development
+  environment:
+    DYNAMODB_MEMBERS_TABLE: members-search-${opt:stage, self:provider.stage}-members
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.DYNAMODB_MEMBERS_TABLE}"
+
+functions:
+  export:
+    handler: export/handler.handler
+    events:
+      - schedule: rate(5 seconds)
+      - http: post /export
+  graphql:
+    handler: graphql/handler.handler
+    events:
+    - http:
+        path: graphql
+        method: post
+        cors: true
+        integration: lambda
+        # authorizer: auth
+
+resources:
+  Resources:
+    MembersDynamoDbTable:
+      Type: 'AWS::DynamoDB::Table'
+      DeletionPolicy: Retain
+      Properties:
+        TableName: ${self:provider.environment.DYNAMODB_MEMBERS_TABLE}
+        AttributeDefinitions:
+          -
+            AttributeName: id
+            AttributeType: S
+          # -
+          #   AttributeName: userId
+          #   AttributeType: S
+          # -
+          #   AttributeName: createdAt
+          #   AttributeType: N
+        KeySchema:
+          -
+            AttributeName: id
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+        # GlobalSecondaryIndexes:
+        # - IndexName: CreatedAtIndex
+        #   KeySchema:
+        #     - AttributeName: userId
+        #       KeyType: HASH
+        #     - AttributeName: createdAt
+        #       KeyType: RANGE
+        #   Projection:
+        #     ProjectionType: ALL
+        #   ProvisionedThroughput:
+        #     ReadCapacityUnits: 1
+        #     WriteCapacityUnits: 1
+          # Projection:
+          #   NonKeyAttributes:
+          #     - user_id
+          #     - user_organization_id
+          #   ProjectionType: INCLUDE
+          # ProvisionedThroughput:
+          #   ReadCapacityUnits: 1
+          #   WriteCapacityUnits: 1
+        # - IndexName: UserGroupIndex
+        #   KeySchema:
+        #     - AttributeName: user_organization_id
+        #       KeyType: HASH
+        #   Projection:
+        #     ProjectionType: ALL
+        #   ProvisionedThroughput:
+        #     ReadCapacityUnits: 1
+        #     WriteCapacityUnits: 1

@@ -1,0 +1,17 @@
+method: bundle
+
+babel: true
+sourceMaps: false
+
+include:
+  - .babelrc
+  - .env
+
+functions:
+  export:
+    include:
+      - "export/**"
+
+  graphql:
+    include:
+      - "graphql/**"

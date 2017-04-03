@@ -1,0 +1,16 @@
+enum CertificationType {
+  CESCL
+  CPESC
+  CISEC
+}
+
+type Member {
+  id: String!
+  name: String
+  certifications: [CertificationType!]
+
+  company: Company
+
+  registeredAt: String
+  expiredAt: String
+}

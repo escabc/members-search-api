@@ -1,0 +1,210 @@
+import dotenv from 'dotenv'
+import fetch from 'node-fetch'
+import xml2js from 'xml2js'
+import parse from 'csv-parse'
+import { doc } from 'serverless-dynamodb-client'
+import _ from 'lodash'
+import camelcase from 'camelcase-keys'
+
+import { findCustomFieldByName } from './utils'
+
+dotenv.config()
+
+const parseString = (input, options) => (
+  new Promise((resolve, reject) => {
+    xml2js.parseString(input, options, (err, result) => {
+      if (err) {
+        reject(err)
+      } else {
+        resolve(result)
+      }
+    })
+  })
+)
+
+const parseResponse = async (res) => {
+  const xml = await res.text()
+  const json = await parseString(xml)
+
+  return json.YourMembership_Response
+}
+
+const api = async (method, props) => {
+  const builder = new xml2js.Builder()
+  const xml = builder.buildObject(props)
+  const res = await fetch('https://api.yourmembership.com', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: `
+      <?xml version="1.0" encoding="utf-8" ?>
+      <YourMembership>
+        <Version>2.25</Version>
+        <ApiKey>${process.env.YM_PRIVATE_API_KEY}</ApiKey>
+        <CallID>001</CallID>
+        <SaPasscode>${process.env.YM_SA_PASSCODE}</SaPasscode>
+        <Call Method="${method}">${xml}</Call>
+      </YourMembership>
+    `,
+  })
+
+  const root = await parseResponse(res)
+  const node = root[method][0]
+
+  return node
+}
+
+const exportMembers = async () => {
+  const res = await api('Sa.Export.Members', { Unicode: 0, CustomFields: 1 })
+  const exportId = res.ExportID[0]
+
+  return exportId
+}
+
+const waitForSuccessfulExport = (exportId) => {
+  const retries = 5
+  const delay = 1000
+
+  return new Promise((resolve, reject) => {
+    const func = async (n) => {
+      const res = await api('Sa.Export.Status', { ExportID: exportId })
+      if (res.Status[0] === '2' && n < 0) {
+        const exportUri = res.ExportURI[0]
+
+        resolve(exportUri)
+      } else if (n >= 0) {
+        setTimeout(() => func(n - 1), delay)
+      } else {
+        reject()
+      }
+    }
+    func(retries)
+  })
+}
+
+const transformItem = async (item) => {
+  // parse custom fields
+  const itemWithMergedCustomFields = item
+
+  const xml = await parseString(item.CustomFields)
+  if (xml) {
+    const node = xml.CustomFieldResponses.CustomFieldResponse
+    if (node) {
+      const nodesWithValue = node.filter(x => _.compact(x.Values).length)
+      itemWithMergedCustomFields.certifications = findCustomFieldByName(nodesWithValue, 'Accreditation')
+      itemWithMergedCustomFields.cesclExpiryDate = findCustomFieldByName(nodesWithValue, 'CESCLExpiryDate')
+    }
+  }
+  delete itemWithMergedCustomFields.CustomFields
+
+  const itemWithId = { id: item.Web_Site_Member_ID, ...itemWithMergedCustomFields }
+  const itemWithoutEmptyProperties = _.omitBy(itemWithId, _.isEmpty)
+  const itemWithCamelcase = camelcase(itemWithoutEmptyProperties)
+
+  return itemWithCamelcase
+}
+
+const batchWrite = items => (
+  new Promise(async (resolve, reject) => {
+    const promises = items.map(x => transformItem(x))
+    const transformedItems = await Promise.all(promises)
+    const params = {
+      RequestItems: {
+        [process.env.DYNAMODB_MEMBERS_TABLE]: transformedItems.map(x => ({
+          PutRequest: { Item: { ...x } },
+        })),
+      },
+    }
+    doc.batchWrite(params, (err) => {
+      if (err) {
+        reject(err)
+      } else {
+        resolve()
+      }
+    })
+  })
+)
+
+const createTable = data => (
+  new Promise(async (resolve) => {
+    const MAX_BATCH_SIZE = 25
+    const splits = []
+    while (data.length > 0) {
+      splits.push(data.splice(0, MAX_BATCH_SIZE))
+    }
+
+    const promises = splits.map(x => batchWrite(x))
+    await Promise.all(promises)
+
+    resolve()
+  })
+)
+
+const importToDatabase = uri => (
+  new Promise(async (resolve, reject) => {
+    // TODO: convert to stream
+    // TODO: sometimes fetch is returning 404
+    const response = await fetch(uri)
+    const csv = await response.text()
+    const columns = ['Web_Site_Member_ID', 'Master_Member_ID', 'API_GUID', 'Constituent_ID', 'Registration_Date', 'Approved_Site_Member', 'Date_Approved', 'Date_Last_Login', 'Member_Suspended', 'Last_Updated', 'Date_Membership_Expires', 'Membership', 'Has_Donated_Online', 'Date_Last_Donated', 'Has_Purchased_Online', 'Date_Last_Purchased', 'Has_Registered_Event_Online', 'Date_Last_Event_Reg', 'Username', 'Password', 'Member_Type_Code', 'Primary_Group_Code', 'Gender', 'First_Name', 'Middle_Name', 'Last_Name', 'Nickname', 'Member_Name_Suffix', 'Member_Name_Title', 'Birthdate', 'Marriage_Status', 'Maiden_Name', 'Anniversary_Date', 'Spouse_Name', 'Email_Address', 'Email_Address_Alternate', 'Email_Bounced', 'Messenger_Type', 'Messenger_Handle', 'Home_Address_Line1', 'Home_Address_Line2', 'Home_City', 'Home_Location', 'Home_State_Abbrev', 'Home_Postal_Code', 'Home_Country', 'Personal_Website', 'Home_Phone_Area_Code', 'Home_Phone', 'Mobile_Area_Code', 'Mobile', 'Employer_Name', 'Professional_Title', 'Profession', 'Employer_Address_Line1', 'Employer_Address_Line2', 'Employer_City', 'Employer_Location', 'Employer_State_Abbrev', 'Employer_Postal_Code', 'Employer_Country', 'Employer_Website', 'Employer_Phone_Area_Code', 'Employer_Phone', 'Employer_Fax_Area_Code', 'Employer_Fax', 'Resume_Exists', 'Resume_Headline', 'Social_Organizations', 'Education_and_Experience', 'More_Personal_Info', 'Internal_Comments', 'Home_Address_Validated', 'Employer_Address_Validated', 'Date_Last_Renewed', 'Date_Effective_Membership_Expires', 'Import_Batch_ID', 'Career_Openings_Allowed', 'Members_Pages_Allowed', 'Additional_Seats_Allowed', 'intNameFormatNormal', 'CustomFields']
+    parse(csv, { columns: () => columns }, async (err, data) => {
+      if (err) {
+        reject(err)
+      } else {
+        await createTable(data)
+
+        resolve()
+      }
+    })
+  })
+)
+  // parser = parse({ columns: true, delimiter: ',' }, (err, data) => {
+  //   var split_arrays = [], size = 25
+  //
+  //   while (data.length > 0) {
+  //       split_arrays.push(data.splice(0, size))
+  //   }
+  //   data_imported = false
+  //   chunk_no = 1
+  //
+  //   async.each(split_arrays, function(item_data, callback) {
+  //       ddb.batchWriteItem({
+  //           "TABLE_NAME" : item_data
+  //       }, {}, function(err, res, cap) {
+  //           console.log('done going next')
+  //           if (err == null) {
+  //               console.log('Success chunk #' + chunk_no)
+  //               data_imported = true
+  //           } else {
+  //               console.log(err)
+  //               console.log('Fail chunk #' + chunk_no)
+  //               data_imported = false
+  //           }
+  //           chunk_no++
+  //           callback()
+  //       })
+  //
+  //   }, function() {
+  //       // run after loops
+  //       console.log('all data imported....')
+  //
+  //   })
+  // })
+  // rs.pipe(parser)
+
+const members = async () => {
+  const exportId = await exportMembers()
+  const exportUri = await waitForSuccessfulExport(exportId)
+  await importToDatabase(exportUri)
+}
+
+export const handler = async (event, context, callback) => {
+  try {
+    await members()
+
+    callback(null, {})
+  } catch (err) {
+    callback(err)
+  }
+}
+
+export default {}

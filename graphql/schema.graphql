@@ -1,0 +1,14 @@
+type Query {
+  members: [Member]
+  companies: [Company]
+}
+
+# type Mutation {
+#   createWastePickupOrder(input: WasteOrderPickupInput!): WasteOrderResponse
+#   createWasteDeliveryOrder(input: WasteOrderDeliveryInput!): WasteOrderResponse
+# }
+
+schema {
+  query: Query
+  # mutation: Mutation
+}
