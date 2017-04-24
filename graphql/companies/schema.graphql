@@ -1,4 +1,0 @@
-type Company {
-  name: String
-  city: String
-}

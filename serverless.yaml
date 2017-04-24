@@ -23,7 +23,7 @@ provider:
   region: us-west-2
   stage: development
   environment:
-    DYNAMODB_MEMBERS_TABLE: members-search-${opt:stage, self:provider.stage}-members
+    DYNAMODB_MEMBERS_TABLE: members-search-api-${opt:stage, self:provider.stage}-members
   iamRoleStatements:
     - Effect: Allow
       Action:
@@ -32,6 +32,7 @@ provider:
         - dynamodb:GetItem
         - dynamodb:PutItem
         - dynamodb:UpdateItem
+        - dynamodb:BatchWriteItem
         - dynamodb:DeleteItem
       Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.DYNAMODB_MEMBERS_TABLE}"
 
@@ -39,16 +40,19 @@ functions:
   export:
     handler: export/handler.handler
     events:
-      - schedule: rate(1 minute)
+      - schedule:
+          rate: rate(1 day)
+          enabled: true
       - http: post /export
+    timeout: 60
   graphql:
     handler: graphql/handler.handler
     events:
-    - http:
-        path: graphql
-        method: post
-        cors: true
-        integration: lambda
+      - http:
+          path: graphql
+          method: post
+          cors: true
+          integration: lambda
 
 resources:
   Resources:
@@ -66,5 +70,5 @@ resources:
             AttributeName: id
             KeyType: HASH
         ProvisionedThroughput:
-          ReadCapacityUnits: 1
-          WriteCapacityUnits: 1
+          ReadCapacityUnits: 5
+          WriteCapacityUnits: 5
