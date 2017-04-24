@@ -8,7 +8,7 @@
     "db:start": "sls dynamodb start --migrate",
     "db:install": "sls dynamodb install",
     "db:fix": "kill $(lsof -i tcp:8000 | awk 'FNR == 2 {print $2}')",
-    "build": "NODE_ENV=production sls deploy --no-deploy",
+    "build": "NODE_ENV=production sls deploy --noDeploy",
     "test:lint": "eslint .",
     "test:unit": "NODE_ENV=test ava tests/unit/**/*.test.js",
     "test:integration": "NODE_ENV=test ava --serial --fail-fast tests/integration/**/*.test.js",
