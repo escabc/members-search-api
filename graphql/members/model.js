@@ -78,7 +78,7 @@ export const queryGovernmentMembers = () => (
   })
 )
 
-export const queryMembersByCompany = (company) => (
+export const queryMembersByCompany = company => (
   new Promise((resolve, reject) => {
     const params = {
       TableName: process.env.DYNAMODB_MEMBERS_TABLE,
