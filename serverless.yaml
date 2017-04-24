@@ -39,7 +39,7 @@ functions:
   export:
     handler: export/handler.handler
     events:
-      - schedule: rate(1 minutes)
+      - schedule: rate(1 minute)
       - http: post /export
   graphql:
     handler: graphql/handler.handler
