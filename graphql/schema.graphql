@@ -1,0 +1,9 @@
+type Query {
+  professionalMembers: [ProfessionalMember]
+  corporateMembers: [CorporateMember]
+  governmentMembers: [GovernmentMember]
+}
+
+schema {
+  query: Query
+}
