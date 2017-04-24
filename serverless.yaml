@@ -39,7 +39,7 @@ functions:
   export:
     handler: export/handler.handler
     events:
-      - schedule: rate(5 seconds)
+      - schedule: rate(1 minutes)
       - http: post /export
   graphql:
     handler: graphql/handler.handler
@@ -61,12 +61,6 @@ resources:
           -
             AttributeName: id
             AttributeType: S
-          # -
-          #   AttributeName: membership
-          #   AttributeType: S
-          # -
-          #   AttributeName: createdAt
-          #   AttributeType: N
         KeySchema:
           -
             AttributeName: id
@@ -74,32 +68,3 @@ resources:
         ProvisionedThroughput:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
-        # GlobalSecondaryIndexes:
-        # - IndexName: MembershipIndex
-        #   KeySchema:
-        #     - AttributeName: membership
-        #       KeyType: HASH
-        #     - AttributeName: id
-        #       KeyType: RANGE
-        #   Projection:
-        #     ProjectionType: ALL
-        #   ProvisionedThroughput:
-        #     ReadCapacityUnits: 1
-        #     WriteCapacityUnits: 1
-          # Projection:
-          #   NonKeyAttributes:
-          #     - user_id
-          #     - user_organization_id
-          #   ProjectionType: INCLUDE
-          # ProvisionedThroughput:
-          #   ReadCapacityUnits: 1
-          #   WriteCapacityUnits: 1
-        # - IndexName: UserGroupIndex
-        #   KeySchema:
-        #     - AttributeName: user_organization_id
-        #       KeyType: HASH
-        #   Projection:
-        #     ProjectionType: ALL
-        #   ProvisionedThroughput:
-        #     ReadCapacityUnits: 1
-        #     WriteCapacityUnits: 1
