@@ -91,13 +91,29 @@ const transformItem = async (item) => {
     if (node) {
       const nodesWithValue = node.filter(x => _.compact(x.Values).length)
       itemWithMergedCustomFields.certifications = findCustomFieldByName(nodesWithValue, 'Accreditation')
-      itemWithMergedCustomFields.cesclExpiryDate = findCustomFieldByName(nodesWithValue, 'CESCLExpiryDate')
+      itemWithMergedCustomFields.specialities = findCustomFieldByName(nodesWithValue, 'CorpSpecialty') || []
+      itemWithMergedCustomFields.regions = findCustomFieldByName(nodesWithValue, 'RegionInfo') || []
+      itemWithMergedCustomFields.visible = true
+      if (findCustomFieldByName(nodesWithValue, 'searchexclusion')) {
+        itemWithMergedCustomFields.visible = findCustomFieldByName(nodesWithValue, 'searchexclusion')[0] === 'NO'
+      }
+      if (findCustomFieldByName(nodesWithValue, 'CESCLExpiryDate')) {
+        itemWithMergedCustomFields.cesclExpiryDate = findCustomFieldByName(nodesWithValue, 'CESCLExpiryDate')[0]
+      }
+      if (findCustomFieldByName(nodesWithValue, 'ProfessionalEmail')) {
+        itemWithMergedCustomFields.email = findCustomFieldByName(nodesWithValue, 'ProfessionalEmail')[0]
+      }
+      if (findCustomFieldByName(nodesWithValue, 'CorplogoURL')) {
+        itemWithMergedCustomFields.avatar = findCustomFieldByName(nodesWithValue, 'CorplogoURL')[0]
+      }
     }
   }
   delete itemWithMergedCustomFields.CustomFields
 
   const itemWithId = { id: item.Web_Site_Member_ID, ...itemWithMergedCustomFields }
-  const itemWithoutEmptyProperties = _.omitBy(itemWithId, _.isEmpty)
+  const itemWithoutEmptyProperties = _.omitBy(itemWithId, x => (
+    _.isNil(x) || (_.isString(x) && _.isEmpty(x))
+  ))
   const itemWithCamelcase = camelcase(itemWithoutEmptyProperties)
 
   return itemWithCamelcase
@@ -157,39 +173,6 @@ const importToDatabase = uri => (
     })
   })
 )
-  // parser = parse({ columns: true, delimiter: ',' }, (err, data) => {
-  //   var split_arrays = [], size = 25
-  //
-  //   while (data.length > 0) {
-  //       split_arrays.push(data.splice(0, size))
-  //   }
-  //   data_imported = false
-  //   chunk_no = 1
-  //
-  //   async.each(split_arrays, function(item_data, callback) {
-  //       ddb.batchWriteItem({
-  //           "TABLE_NAME" : item_data
-  //       }, {}, function(err, res, cap) {
-  //           console.log('done going next')
-  //           if (err == null) {
-  //               console.log('Success chunk #' + chunk_no)
-  //               data_imported = true
-  //           } else {
-  //               console.log(err)
-  //               console.log('Fail chunk #' + chunk_no)
-  //               data_imported = false
-  //           }
-  //           chunk_no++
-  //           callback()
-  //       })
-  //
-  //   }, function() {
-  //       // run after loops
-  //       console.log('all data imported....')
-  //
-  //   })
-  // })
-  // rs.pipe(parser)
 
 const members = async () => {
   const exportId = await exportMembers()

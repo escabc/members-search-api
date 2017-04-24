@@ -4,28 +4,31 @@ import { merge } from 'lodash'
 import { makeExecutableSchema } from 'graphql-tools'
 
 import { schema as MembersSchema, resolver as MembersResolver } from './members'
-import { schema as CompaniesSchema, resolver as CompaniesResolver } from './companies'
-import { queryMembers } from './members/model'
-import { queryCompanies } from './companies/model'
+import { queryProfessionalMembers, queryCorporateMembers, queryGovernmentMembers } from './members/model'
 
 const rootSchema = [fs.readFileSync(join(__dirname, 'schema.graphql'), 'utf-8')]
 const rootResolvers = {
   Query: {
-    members: async () => {
-      const members = await queryMembers()
+    professionalMembers: async () => {
+      const members = await queryProfessionalMembers()
 
       return members
     },
-    companies: async () => {
-      const companies = await queryCompanies()
+    corporateMembers: async () => {
+      const members = await queryCorporateMembers()
 
-      return companies
+      return members
+    },
+    governmentMembers: async () => {
+      const members = await queryGovernmentMembers()
+
+      return members
     },
   },
 }
 
-const schema = [...rootSchema, ...MembersSchema, ...CompaniesSchema]
-const resolvers = merge(rootResolvers, MembersResolver, CompaniesResolver)
+const schema = [...rootSchema, ...MembersSchema]
+const resolvers = merge(rootResolvers, MembersResolver)
 
 const executableSchema = makeExecutableSchema({
   typeDefs: schema,

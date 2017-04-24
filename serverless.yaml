@@ -49,7 +49,6 @@ functions:
         method: post
         cors: true
         integration: lambda
-        # authorizer: auth
 
 resources:
   Resources:
@@ -63,7 +62,7 @@ resources:
             AttributeName: id
             AttributeType: S
           # -
-          #   AttributeName: userId
+          #   AttributeName: membership
           #   AttributeType: S
           # -
           #   AttributeName: createdAt
@@ -76,11 +75,11 @@ resources:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
         # GlobalSecondaryIndexes:
-        # - IndexName: CreatedAtIndex
+        # - IndexName: MembershipIndex
         #   KeySchema:
-        #     - AttributeName: userId
+        #     - AttributeName: membership
         #       KeyType: HASH
-        #     - AttributeName: createdAt
+        #     - AttributeName: id
         #       KeyType: RANGE
         #   Projection:
         #     ProjectionType: ALL

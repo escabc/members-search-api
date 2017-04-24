@@ -1,16 +1,65 @@
-enum CertificationType {
-  CESCL
-  CPESC
-  CISEC
-}
-
-type Member {
+type ProfessionalMember {
   id: String!
-  name: String
-  certifications: [CertificationType!]
-
-  company: Company
+  name: String!
+  title: String
+  email: String
+  phone: String
+  company: String
+  regions: [String]
+  location: Location
+  certifications: Certifications
 
   registeredAt: String
-  expiredAt: String
+  expired: Boolean
+}
+
+type CorporateMember {
+  id: String!
+  name: String
+  description: String
+  email: String
+  phone: String
+  fax: String
+  avatar: String
+  website: String
+  specialities: [String]
+  regions: [String]
+  location: Location
+  totals: CertificationTotals
+
+  registeredAt: String
+  expired: Boolean
+}
+
+type GovernmentMember {
+  id: String!
+  name: String
+  description: String
+  avatar: String
+  regions: [String]
+  location: Location
+
+  registeredAt: String
+  expired: Boolean
+}
+
+type Location {
+  address: String
+  city: String
+  province: String
+  country: String
+  postalCode: String
+}
+
+type Certifications {
+  CESCL: Boolean
+  CESCLExpired: Boolean
+  CPESC: Boolean
+  CISEC: Boolean
+}
+
+type CertificationTotals {
+  CESCL: Int
+  CPESC: Int
+  CISEC: Int
 }
