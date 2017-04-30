@@ -41,7 +41,7 @@ functions:
     handler: export/handler.handler
     events:
       - schedule:
-          cron: cron(0 8 * * ? *)
+          rate: cron(0 8 * * ? *)
           enabled: true
       - http: post /export
     timeout: 60
