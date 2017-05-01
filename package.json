@@ -33,6 +33,7 @@
     "babel": "inherit"
   },
   "dependencies": {
+    "babel-polyfill": "^6.23.0",
     "camelcase-keys": "4.1.0",
     "csv-parse": "1.2.0",
     "dotenv": "4.0.0",
