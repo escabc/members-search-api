@@ -4,10 +4,10 @@
   "description": "API service for Members Search",
   "main": "handler.js",
   "scripts": {
-    "start": "sls offline --port 3000 start",
+    "start": "sls offline start",
     "db:start": "sls dynamodb start --migrate",
     "db:install": "sls dynamodb install",
-    "db:fix": "kill $(lsof -i tcp:8000 | awk 'FNR == 2 {print $2}')",
+    "db:fix": "kill $(lsof -i tcp:3000 | awk 'FNR == 2 {print $2}')",
     "build": "NODE_ENV=production sls package --stage=production",
     "test:lint": "eslint .",
     "test:unit": "NODE_ENV=test ava tests/unit/**/*.test.js",
@@ -33,7 +33,6 @@
     "babel": "inherit"
   },
   "dependencies": {
-    "babel-polyfill": "6.23.0",
     "camelcase-keys": "4.1.0",
     "csv-parse": "1.2.0",
     "dotenv": "4.0.0",
