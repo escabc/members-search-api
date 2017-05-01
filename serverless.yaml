@@ -41,7 +41,7 @@ functions:
     handler: export/handler.handler
     events:
       - schedule:
-          rate: rate(1 day)
+          rate: cron(0 8 * * ? *)
           enabled: true
       - http: post /export
     timeout: 60
@@ -49,10 +49,9 @@ functions:
     handler: graphql/handler.handler
     events:
       - http:
-          path: graphql
           method: post
+          path: graphql
           cors: true
-          integration: lambda
 
 resources:
   Resources:

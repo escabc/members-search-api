@@ -35,6 +35,10 @@ type GovernmentMember {
   id: String!
   name: String
   description: String
+  email: String
+  phone: String
+  fax: String
+  website: String
   avatar: String
   regions: [String]
   location: Location

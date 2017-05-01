@@ -35,12 +35,12 @@ export const resolver = {
 
   CorporateMember: {
     name: root => root.employerName,
-    specialities: root => root.specialities,
-    website: root => root.employerWebsite,
+    description: root => root.morePersonalInfo,
     email: root => root.email,
     phone: root => (root.employerPhoneAreaCode && root.employerPhone ? `${root.employerPhoneAreaCode} ${root.employerPhone}` : null),
     fax: root => (root.employerFaxAreaCode && root.employerFax ? `${root.employerFaxAreaCode} ${root.employerFax}` : null),
-    description: root => root.morePersonalInfo,
+    website: root => root.employerWebsite,
+    specialities: root => root.specialities,
     regions: root => root.regions,
     location: root => ({
       address: root.employerAddressLine1,
@@ -67,6 +67,10 @@ export const resolver = {
   GovernmentMember: {
     name: root => root.employerName,
     description: root => root.morePersonalInfo,
+    email: root => root.email,
+    phone: root => (root.employerPhoneAreaCode && root.employerPhone ? `${root.employerPhoneAreaCode} ${root.employerPhone}` : null),
+    fax: root => (root.employerFaxAreaCode && root.employerFax ? `${root.employerFaxAreaCode} ${root.employerFax}` : null),
+    website: root => root.employerWebsite,
     regions: root => root.regions,
     location: root => ({
       address: root.employerAddressLine1,
