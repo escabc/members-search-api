@@ -42,6 +42,8 @@ type GovernmentMember {
   avatar: String
   regions: [String]
   location: Location
+  contact: Contact
+  program: Program
 
   registeredAt: String
   expired: Boolean
@@ -53,6 +55,18 @@ type Location {
   province: String
   country: String
   postalCode: String
+}
+
+type Program {
+  website: String
+  rainfallLink: String
+}
+
+type Contact {
+  name: String
+  department: String
+  phone: String
+  email: String
 }
 
 type Certifications {

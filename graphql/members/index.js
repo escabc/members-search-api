@@ -79,6 +79,16 @@ export const resolver = {
       country: root.employerCountry,
       postalCode: root.employerPostalCode,
     }),
+    contact: root => ({
+      name: root.contactName,
+      department: root.contactDepartment,
+      phone: root.contactPhone,
+      email: root.contactEmail,
+    }),
+    program: root => ({
+      website: root.programWebsite,
+      rainfallLink: root.programRainfallLink,
+    }),
 
     registeredAt: root => root.registrationDate,
     expired: root => moment().isAfter(root.dateMembershipExpires),
