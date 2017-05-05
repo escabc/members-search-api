@@ -106,6 +106,24 @@ const transformItem = async (item) => {
       if (findCustomFieldByName(nodesWithValue, 'CorplogoURL')) {
         itemWithMergedCustomFields.avatar = findCustomFieldByName(nodesWithValue, 'CorplogoURL')[0]
       }
+      if (findCustomFieldByName(nodesWithValue, 'PCG')) {
+        itemWithMergedCustomFields.contactName = findCustomFieldByName(nodesWithValue, 'PCG')[0]
+      }
+      if (findCustomFieldByName(nodesWithValue, 'BUS')) {
+        itemWithMergedCustomFields.contactDepartment = findCustomFieldByName(nodesWithValue, 'BUS')[0]
+      }
+      if (findCustomFieldByName(nodesWithValue, 'GovtContactPhone')) {
+        itemWithMergedCustomFields.contactPhone = findCustomFieldByName(nodesWithValue, 'GovtContactPhone')[0]
+      }
+      if (findCustomFieldByName(nodesWithValue, 'GovtContactEmail')) {
+        itemWithMergedCustomFields.contactEmail = findCustomFieldByName(nodesWithValue, 'GovtContactEmail')[0]
+      }
+      if (findCustomFieldByName(nodesWithValue, 'weblink')) {
+        itemWithMergedCustomFields.programWebsite = findCustomFieldByName(nodesWithValue, 'weblink')[0]
+      }
+      if (findCustomFieldByName(nodesWithValue, 'Rainfalllink')) {
+        itemWithMergedCustomFields.programRainfallLink = findCustomFieldByName(nodesWithValue, 'Rainfalllink')[0]
+      }
     }
   }
   delete itemWithMergedCustomFields.CustomFields
