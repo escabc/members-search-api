@@ -84,7 +84,6 @@ const waitForSuccessfulExport = (exportId) => {
 const transformItem = async (item) => {
   // parse custom fields
   const itemWithMergedCustomFields = item
-  console.log(item)
 
   const xml = await parseString(item.CustomFields)
   if (xml) {
