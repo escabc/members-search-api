@@ -49,6 +49,7 @@ export const resolver = {
       country: root.employerCountry,
       postalCode: root.employerPostalCode,
     }),
+    contact: root => root.corporateContactName,
     totals: async (root) => {
       const members = await queryMembersByCompany(root.employerName)
       const totals = {

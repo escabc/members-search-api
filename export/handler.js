@@ -84,6 +84,7 @@ const waitForSuccessfulExport = (exportId) => {
 const transformItem = async (item) => {
   // parse custom fields
   const itemWithMergedCustomFields = item
+  console.log(item)
 
   const xml = await parseString(item.CustomFields)
   if (xml) {
@@ -123,6 +124,9 @@ const transformItem = async (item) => {
       }
       if (findCustomFieldByName(nodesWithValue, 'Rainfalllink')) {
         itemWithMergedCustomFields.programRainfallLink = findCustomFieldByName(nodesWithValue, 'Rainfalllink')[0]
+      }
+      if (findCustomFieldByName(nodesWithValue, 'CorpContact')) {
+        itemWithMergedCustomFields.corporateContactName = findCustomFieldByName(nodesWithValue, 'CorpContact')[0]
       }
     }
   }
