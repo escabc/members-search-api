@@ -124,6 +124,9 @@ const transformItem = async (item) => {
       if (findCustomFieldByName(nodesWithValue, 'Rainfalllink')) {
         itemWithMergedCustomFields.programRainfallLink = findCustomFieldByName(nodesWithValue, 'Rainfalllink')[0]
       }
+      if (findCustomFieldByName(nodesWithValue, 'CorpContact')) {
+        itemWithMergedCustomFields.corporateContactName = findCustomFieldByName(nodesWithValue, 'CorpContact')[0]
+      }
     }
   }
   delete itemWithMergedCustomFields.CustomFields
