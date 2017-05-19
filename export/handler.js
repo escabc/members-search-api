@@ -137,7 +137,7 @@ const transformItem = async (item) => {
   return itemWithCamelcase
 }
 
-const batchWrite = items => (
+const batchUpdate = items => (
   new Promise(async (resolve, reject) => {
     const promises = items.map(x => transformItem(x))
     const transformedItems = await Promise.all(promises)
@@ -158,6 +158,58 @@ const batchWrite = items => (
   })
 )
 
+const batchDelete = items => (
+  new Promise(async (resolve, reject) => {
+    const params = {
+      RequestItems: {
+        [process.env.DYNAMODB_MEMBERS_TABLE]: items.map(x => ({
+          DeleteRequest: { Key: { id: x.id } },
+        })),
+      },
+    }
+    doc.batchWrite(params, (err) => {
+      if (err) {
+        reject(err)
+      } else {
+        resolve()
+      }
+    })
+  })
+)
+
+const queryMembers = () => (
+  new Promise((resolve, reject) => {
+    const params = {
+      TableName: process.env.DYNAMODB_MEMBERS_TABLE,
+    }
+
+    doc.scan(params, (err, data) => {
+      if (err) {
+        reject(err)
+        return
+      }
+
+      resolve(data.Items)
+    })
+  })
+)
+
+const clearTable = () => (
+  new Promise(async (resolve) => {
+    const MAX_BATCH_SIZE = 25
+    const splits = []
+    const data = await queryMembers()
+    while (data.length > 0) {
+      splits.push(data.splice(0, MAX_BATCH_SIZE))
+    }
+
+    const promises = splits.map(x => batchDelete(x))
+    await Promise.all(promises)
+
+    resolve()
+  })
+)
+
 const createTable = data => (
   new Promise(async (resolve) => {
     const MAX_BATCH_SIZE = 25
@@ -166,7 +218,7 @@ const createTable = data => (
       splits.push(data.splice(0, MAX_BATCH_SIZE))
     }
 
-    const promises = splits.map(x => batchWrite(x))
+    const promises = splits.map(x => batchUpdate(x))
     await Promise.all(promises)
 
     resolve()
@@ -184,6 +236,7 @@ const importToDatabase = uri => (
       if (err) {
         reject(err)
       } else {
+        await clearTable()
         await createTable(data)
 
         resolve()

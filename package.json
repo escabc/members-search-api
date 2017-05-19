@@ -7,7 +7,7 @@
     "start": "sls offline start",
     "db:start": "sls dynamodb start --migrate",
     "db:install": "sls dynamodb install",
-    "db:fix": "kill $(lsof -i tcp:3000 | awk 'FNR == 2 {print $2}')",
+    "db:fix": "kill $(lsof -i tcp:8000 | awk 'FNR == 2 {print $2}')",
     "build": "NODE_ENV=production sls package --stage=production",
     "test:lint": "eslint .",
     "test:unit": "NODE_ENV=test ava tests/unit/**/*.test.js",
