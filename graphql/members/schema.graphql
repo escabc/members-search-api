@@ -25,6 +25,7 @@ type CorporateMember {
   specialities: [String]
   regions: [String]
   location: Location
+  contact: String
   totals: CertificationTotals
 
   registeredAt: String
