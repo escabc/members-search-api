@@ -26,6 +26,9 @@ Start project in development mode:
 $> yarn start
 ```
 
+Populate local database:
+Generate a POST request to the `export` endpoint using [Postman](https://www.getpostman.com/) or some other API testing service.
+
 ### Testing
 ```sh
 $> yarn run test:lint # linting tests
