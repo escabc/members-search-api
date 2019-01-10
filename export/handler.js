@@ -36,7 +36,7 @@ const api = async (method, props) => {
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     body: `
-      <?xml version='1.0" encoding="utf-8" ?>
+      <?xml version="1.0" encoding="utf-8" ?>
       <YourMembership>
         <Version>2.25</Version>
         <ApiKey>${process.env.YM_PRIVATE_API_KEY}</ApiKey>
