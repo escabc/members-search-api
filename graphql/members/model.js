@@ -2,7 +2,13 @@ import { doc } from 'serverless-dynamodb-client'
 import _ from 'lodash'
 import moment from 'moment'
 
-const EXPIRY_DURATION_CUTOFF = -31; // 30 days or less
+const excludeExpiredOver30Days = (items) => {
+  return items.filter(item => {
+    const expiry = moment(item.dateMembershipExpires);
+    const today = moment();
+    return expiry.diff(today, 'days') > -31;
+  });
+}
 
 export const queryProfessionalMembers = () => (
   new Promise((resolve, reject) => {
@@ -21,12 +27,7 @@ export const queryProfessionalMembers = () => (
         return
       }
       
-      const items = data.Items.filter(x => x.visible).filter(item => {
-        const expiry = moment(item.dateMembershipExpires);
-        const today = moment();
-        return expiry.diff(today, 'days') > EXPIRY_DURATION_CUTOFF;
-      });
-      
+      const items = excludeExpiredOver30Days(data.Items.filter(x => x.visible))
       const itemsWithDefaultCertifications = items.map(x => ({
         ...x,
         certifications: x.certifications || [],
@@ -54,12 +55,7 @@ export const queryCorporateMembers = () => (
         return
       }
 
-      const items = data.Items.filter(item => {
-        const expiry = moment(item.dateMembershipExpires);
-        const today = moment();
-        return expiry.diff(today, 'days') > EXPIRY_DURATION_CUTOFF;
-      });
-
+      const items = excludeExpiredOver30Days(data.Items)
       const itemsSortedByName = _.sortBy(items, 'employerName')
 
       resolve(itemsSortedByName)
@@ -83,12 +79,7 @@ export const queryGovernmentMembers = () => (
         return
       }
 
-      const items = data.Items.filter(item => {
-        const expiry = moment(item.dateMembershipExpires);
-        const today = moment();
-        return expiry.diff(today, 'days') > EXPIRY_DURATION_CUTOFF;
-      });
-      
+      const items = excludeExpiredOver30Days(data.Items)
       const itemsSortedByName = _.sortBy(items, 'employerName')
 
       resolve(itemsSortedByName)
