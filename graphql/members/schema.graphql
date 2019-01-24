@@ -3,7 +3,9 @@ type ProfessionalMember {
   name: String!
   title: String
   email: String
+  website: String
   phone: String
+  fax: String
   company: String
   regions: [String]
   location: Location
