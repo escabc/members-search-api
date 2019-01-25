@@ -5,6 +5,7 @@ type ProfessionalMember {
   email: String
   website: String
   phone: String
+  mobile: String
   fax: String
   company: String
   regions: [String]

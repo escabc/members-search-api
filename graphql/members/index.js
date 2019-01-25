@@ -12,6 +12,7 @@ export const resolver = {
     email: root => root.email,
     website: root => root.employerWebsite,
     phone: root => (root.employerPhoneAreaCode && root.employerPhone ? `${root.employerPhoneAreaCode} ${root.employerPhone}` : null),
+    mobile: root => (root.mobileAreaCode && root.mobile ? `${root.mobileAreaCode} ${root.mobile}` : null),
     fax: root => (root.employerFaxAreaCode && root.employerFax ? `${root.employerFaxAreaCode} ${root.employerFax}` : null),
     company: root => root.employerName,
     regions: root => root.regions,
