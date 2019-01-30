@@ -41,3 +41,8 @@ Deploy to AWS Lambda for testing:
 ```sh
 $> yarn run deploy
 ```
+
+Deploy to live AWS Lambda:
+```sh
+$> yarn run deploy:production
+```
