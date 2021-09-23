@@ -19,7 +19,7 @@ custom:
 
 provider:
   name: aws
-  runtime: nodejs6.10
+  runtime: nodejs14.x
   region: us-west-2
   stage: development
   environment:
