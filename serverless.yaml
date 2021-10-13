@@ -1,6 +1,6 @@
 service: members-search-api
 
-frameworkVersion: ">=1.5.0 <2.0.0"
+frameworkVersion: ">=2.62.0"
 
 plugins:
   - serverless-dynamodb-local

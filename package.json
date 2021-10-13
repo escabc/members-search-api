@@ -4,7 +4,7 @@
   "description": "API service for Members Search",
   "main": "handler.js",
   "scripts": {
-    "start": "sls offline start",
+    "start": "SLS_DEBUG=* sls offline start",
     "db:start": "sls dynamodb start --migrate",
     "db:install": "sls dynamodb install",
     "db:fix": "kill $(lsof -i tcp:8000 | awk 'FNR == 2 {print $2}')",
@@ -12,11 +12,12 @@
     "test:lint": "eslint .",
     "test:unit": "NODE_ENV=test ava tests/unit/**/*.test.js",
     "test:integration": "NODE_ENV=test ava --serial --fail-fast tests/integration/**/*.test.js",
-    "test:deploy": "NODE_ENV=production sls --stage=${DEPLOY_STAGE:-development} --no-deploy deploy",
-    "deploy": "NODE_ENV=production sls --stage=${DEPLOY_STAGE:-development} deploy",
-    "deploy:production": "NODE_ENV=production sls --stage=production deploy",
+    "test:deploy": "NODE_ENV=production sls deploy --stage=${DEPLOY_STAGE:-development} --no-deploy ",
+    "deploy": "SLS_DEBUG=* NODE_ENV=production sls deploy --stage=${DEPLOY_STAGE:-development}",
+    "deploy:production": "NODE_ENV=production sls deploy --stage=production",
     "logs": "sls logs --function=${LOGS_FUNCTION:-graphql} --stage=${LOGS_STAGE:-development} --tail",
-    "copy:graphql": "find src -name \\*.graphql -exec cp {} ./dist/{} \\;"
+    "copy:graphql": "find src -name \\*.graphql -exec cp {} ./dist/{} \\;",
+    "prestart": "node fix-sls-offline.js"
   },
   "repository": {
     "type": "git",
@@ -57,9 +58,9 @@
     "eslint-plugin-import": "2.2.0",
     "eslint-plugin-jsx-a11y": "4.0.0",
     "eslint-plugin-react": "6.10.3",
-    "serverless": "1.12.1",
-    "serverless-build-plugin": "1.2.0",
-    "serverless-dynamodb-local": "0.2.21",
-    "serverless-offline": "3.13.5"
+    "serverless": "2.62.0",
+    "serverless-build-plugin": "3.2.0",
+    "serverless-dynamodb-local": "0.2.40",
+    "serverless-offline": "8.2.0"
   }
 }

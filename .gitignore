@@ -38,3 +38,4 @@ node_modules
 # Local files to export CSV from Your Membership
 /local
 .DS_Store
+/export-local
