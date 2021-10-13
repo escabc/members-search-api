@@ -62,5 +62,8 @@
     "serverless-build-plugin": "3.2.0",
     "serverless-dynamodb-local": "0.2.40",
     "serverless-offline": "8.2.0"
+  },
+  "resolutions": {
+    "**/**/fsevents": "^1.2.9"
   }
 }
