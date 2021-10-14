@@ -61,6 +61,7 @@
     "serverless": "2.62.0",
     "serverless-build-plugin": "3.2.0",
     "serverless-dynamodb-local": "0.2.40",
+    "serverless-esbuild": "^1.20.0",
     "serverless-offline": "8.2.0"
   }
 }

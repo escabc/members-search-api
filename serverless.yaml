@@ -5,7 +5,8 @@ frameworkVersion: ">=2.62.0"
 plugins:
   - serverless-dynamodb-local
   - serverless-offline
-  - serverless-build-plugin
+#  - serverless-build-plugin
+  - serverless-esbuild
 
 custom:
   dynamodb:
@@ -16,7 +17,10 @@ custom:
   serverless-offline:
     babelOptions:
       presets: ['es2015', 'stage-0']
-
+  esbuild:
+    bundle: true
+    minify: false
+    packager: yarn
 provider:
   name: aws
   runtime: nodejs14.x
