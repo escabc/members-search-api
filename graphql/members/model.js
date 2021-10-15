@@ -2,12 +2,12 @@ import { doc } from 'serverless-dynamodb-client'
 import _ from 'lodash'
 import moment from 'moment'
 
-const excludeExpiredOver30Days = (items) => {
+const excludeExpiredOver30Days = items => {
   return items.filter(item => {
-    const expiry = moment(item.dateMembershipExpires);
-    const today = moment();
-    return expiry.diff(today, 'days') > -31;
-  });
+    const expiry = moment(item.dateMembershipExpires)
+    const today = moment()
+    return expiry.diff(today, 'days') > -31
+  })
 }
 
 export const queryProfessionalMembers = () => (
@@ -26,7 +26,7 @@ export const queryProfessionalMembers = () => (
         reject(err)
         return
       }
-      
+
       const items = excludeExpiredOver30Days(data.Items.filter(x => x.visible))
       const itemsWithDefaultCertifications = items.map(x => ({
         ...x,

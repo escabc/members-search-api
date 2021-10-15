@@ -23,13 +23,15 @@ export const resolver = {
       country: root.employerCountry,
       postalCode: root.employerPostalCode,
     }),
-    certifications: (root) => {
+    certifications: root => {
       const CESCL = root.certifications.includes('CESCL')
       const CESCLExpired = root.cesclExpiryDate ? moment().isAfter(root.cesclExpiryDate) : null
       const CPESC = root.certifications.includes('CPESC')
       const CISEC = root.certifications.includes('CISEC')
 
-      return { CESCL, CESCLExpired, CPESC, CISEC }
+      return {
+        CESCL, CESCLExpired, CPESC, CISEC,
+      }
     },
 
     registeredAt: root => root.registrationDate,
@@ -53,7 +55,7 @@ export const resolver = {
       postalCode: root.employerPostalCode,
     }),
     contact: root => root.corporateContactName,
-    totals: async (root) => {
+    totals: async root => {
       const members = await queryMembersByCompany(root.employerName)
       const totals = {
         CESCL: members.filter(x => x.certifications && x.certifications.includes('CESCL')).length,

@@ -22,7 +22,7 @@ const parseString = (input, options) => (
   })
 )
 
-const parseResponse = async (res) => {
+const parseResponse = async res => {
   const xml = await res.text()
   const json = await parseString(xml)
 
@@ -60,12 +60,12 @@ const exportMembers = async () => {
   return exportId
 }
 
-const waitForSuccessfulExport = (exportId) => {
+const waitForSuccessfulExport = exportId => {
   const retries = 5
   const delay = 1000
 
   return new Promise((resolve, reject) => {
-    const func = async (n) => {
+    const func = async n => {
       const res = await api('Sa.Export.Status', { ExportID: exportId })
       if (res.Status[0] === '2' && n < 0) {
         const exportUri = res.ExportURI[0]
@@ -80,7 +80,7 @@ const waitForSuccessfulExport = (exportId) => {
   })
 }
 
-const transformItem = async (item) => {
+const transformItem = async item => {
   // parse custom fields
   const itemWithMergedCustomFields = item
 
@@ -150,7 +150,7 @@ const batchUpdate = items => (
         })),
       },
     }
-    doc.batchWrite(params, (err) => {
+    doc.batchWrite(params, err => {
       if (err) {
         reject(err)
       } else {
@@ -169,7 +169,7 @@ const batchDelete = items => (
         })),
       },
     }
-    doc.batchWrite(params, (err) => {
+    doc.batchWrite(params, err => {
       if (err) {
         reject(err)
       } else {
@@ -197,7 +197,7 @@ const queryMembers = () => (
 )
 
 const clearTable = () => (
-  new Promise(async (resolve) => {
+  new Promise(async resolve => {
     const MAX_BATCH_SIZE = 25
     const splits = []
     const data = await queryMembers()
@@ -213,7 +213,7 @@ const clearTable = () => (
 )
 
 const createTable = data => (
-  new Promise(async (resolve) => {
+  new Promise(async resolve => {
     const MAX_BATCH_SIZE = 25
     const splits = []
     while (data.length > 0) {

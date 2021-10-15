@@ -6,7 +6,8 @@ plugins:
   - serverless-dynamodb-local
   - serverless-offline
 #  - serverless-build-plugin
-  - serverless-esbuild
+  # - serverless-esbuild
+  - serverless-bundle
 
 custom:
   dynamodb:
@@ -17,10 +18,12 @@ custom:
   serverless-offline:
     babelOptions:
       presets: ['es2015', 'stage-0']
-  esbuild:
-    bundle: true
-    minify: false
-    packager: yarn
+  bundle:
+    sourcemaps: true
+  # esbuild:
+  #   bundle: true
+  #   minify: false
+  #   packager: yarn
 provider:
   name: aws
   lambdaHashingVersion: 20201221
