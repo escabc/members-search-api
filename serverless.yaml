@@ -27,6 +27,8 @@ custom:
     copyFiles: 
       - from: '.env'
         to: './'
+      - from: 'graphql/schema.graphql'
+        to: './graphql/'
     # forceInclude:
     #   - dotenv
     #   - node-fetch
