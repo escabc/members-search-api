@@ -39,3 +39,6 @@ node_modules
 /local
 .DS_Store
 /export-local
+
+# Local files for docker
+.aws

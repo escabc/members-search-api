@@ -9,6 +9,9 @@ plugins:
   # - serverless-esbuild
   - serverless-bundle
 
+package:
+  individually: true
+
 custom:
   dynamodb:
     start:
@@ -20,10 +23,23 @@ custom:
       presets: ['es2015', 'stage-0']
   bundle:
     sourcemaps: true
-  # esbuild:
-  #   bundle: true
-  #   minify: false
-  #   packager: yarn
+    packager: yarn
+    copyFiles: 
+      - from: '.env'
+        to: './'
+    # forceInclude:
+    #   - dotenv
+    #   - node-fetch
+    #   - xml2js
+    #   - csv-parse
+    #   - serverless-dynamodb-client
+    #   - lodash
+    #   - camelcase-keys
+    #   - graphql
+    #   - fs
+    #   - path
+    #   - moment
+    #   - graphql-tools
 provider:
   name: aws
   lambdaHashingVersion: 20201221
@@ -47,6 +63,10 @@ provider:
 functions:
   export:
     handler: export/handler.handler
+    package:
+      # We're including this file so it will be in the final package of this function only
+      patterns:
+        - utils.js
     events:
       - schedule:
           rate: cron(0 8 * * ? *) # 1am PST
