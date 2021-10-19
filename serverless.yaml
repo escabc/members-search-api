@@ -24,6 +24,7 @@ custom:
       presets: ['es2015', 'stage-0']
   webpack:
     packager: 'yarn'
+    includeModules: true # enable auto-packing of external modules
   # bundle:
   #   sourcemaps: true
   #   packager: yarn
