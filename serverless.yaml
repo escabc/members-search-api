@@ -71,6 +71,7 @@ functions:
       include:
         - '.env'
         - 'graphql/schema.graphql'
+        - 'graphql/members-schema.graphql'
     events:
       - http:
           method: post

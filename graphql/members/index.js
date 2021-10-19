@@ -4,7 +4,7 @@ import moment from 'moment'
 
 import { queryMembersByCompany } from './model'
 
-export const schema = [fs.readFileSync(join(__dirname, 'schema.graphql'), 'utf-8')]
+export const schema = [fs.readFileSync(join(__dirname, 'members-schema.graphql'), 'utf-8')]
 export const resolver = {
   ProfessionalMember: {
     name: root => `${root.firstName} ${root.lastName}`,

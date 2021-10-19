@@ -42,3 +42,6 @@ node_modules
 
 # Local files for docker
 .aws
+
+# Temporary files copied files for serverless-copy-webpack-plugin
+/graphql/members-schema.graphql

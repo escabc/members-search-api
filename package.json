@@ -17,7 +17,8 @@
     "deploy:production": "NODE_ENV=production sls deploy --stage=production",
     "logs": "sls logs --function=${LOGS_FUNCTION:-graphql} --stage=${LOGS_STAGE:-development} --tail",
     "copy:graphql": "find src -name \\*.graphql -exec cp {} ./dist/{} \\;",
-    "package": "SLS_DEBUG=* sls package"
+    "package": "SLS_DEBUG=* sls package",
+    "copy:members-schema": "cp graphql/members/members-schema.graphql graphql"
   },
   "repository": {
     "type": "git",
@@ -36,6 +37,8 @@
     "babel": true
   },
   "dependencies": {
+    "@babel/runtime": "^7.15.4",
+    "@graphql-tools/schema": "^8.3.0",
     "babel-polyfill": "^6.23.0",
     "camelcase-keys": "7.0.1",
     "csv-parse": "4.16.3",
@@ -43,14 +46,12 @@
     "fs": "^0.0.1-security",
     "fs-extra": "^10.0.0",
     "graphql": "15.6.1",
-    "graphql-tools": "8.2.0",
     "lodash": "^4.17.11",
     "moment": "^2.18.1",
     "node-fetch": "3.0.0",
     "path": "^0.12.7",
     "serverless-dynamodb-client": "0.0.2",
-    "xml2js": "0.4.23",
-    "@babel/runtime": "^7.15.4"
+    "xml2js": "0.4.23"
   },
   "devDependencies": {
     "@ava/babel": "^2.0.0",

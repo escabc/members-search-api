@@ -35,8 +35,13 @@ $> yarn run test:lint # linting tests
 $> yarn run test:unit # unit tests
 ```
 
-## Deploy
+## Pre-deploy/Pre-packaging
+We're using [serverless-webpack](https://github.com/serverless-heaven/serverless-webpack) to package the functions for deployments and [serverless-copy-webpack-plugin](https://www.npmjs.com/package/serverless-copy-webpack-plugin) to copy over non-js files for packaging. `serverless-webpack` will compile all the javascript into a single file (per function), so the `graphql/members/members-schema.graphql` file needs to be copied to `graphql/members-schema.graphql` before packaging and deployment. Do this by running `yarn run copy:members-schema` before the deploy for packaging scrips.
 
+## Packaging
+Run `yarn run package` to create the compiled packages locally without deploying to AWS.
+
+## Deploy
 Deploy to AWS Lambda for testing:
 ```sh
 $> yarn run deploy
