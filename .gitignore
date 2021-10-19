@@ -45,3 +45,7 @@ node_modules
 
 # Temporary files copied files for serverless-copy-webpack-plugin
 /graphql/members-schema.graphql
+
+# Sensitive files
+credentials*
+
