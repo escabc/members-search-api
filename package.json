@@ -16,7 +16,8 @@
     "deploy": "SLS_DEBUG=* NODE_ENV=production sls deploy --stage=${DEPLOY_STAGE:-development}",
     "deploy:production": "NODE_ENV=production sls deploy --stage=production",
     "logs": "sls logs --function=${LOGS_FUNCTION:-graphql} --stage=${LOGS_STAGE:-development} --tail",
-    "copy:graphql": "find src -name \\*.graphql -exec cp {} ./dist/{} \\;"
+    "copy:graphql": "find src -name \\*.graphql -exec cp {} ./dist/{} \\;",
+    "package": "sls package"
   },
   "repository": {
     "type": "git",
@@ -69,7 +70,9 @@
     "eslint-plugin-react": "7.26.1",
     "serverless": "2.62.0",
     "serverless-bundle": "^5.0.2",
+    "serverless-copy-webpack-plugin": "^1.1.0",
     "serverless-dynamodb-local": "0.2.40",
-    "serverless-offline": "8.2.0"
+    "serverless-offline": "8.2.0",
+    "serverless-webpack": "^5.5.5"
   }
 }

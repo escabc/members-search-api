@@ -4,10 +4,11 @@ frameworkVersion: ">=2.62.0"
 
 plugins:
   - serverless-dynamodb-local
+  - serverless-webpack
   - serverless-offline
 #  - serverless-build-plugin
   # - serverless-esbuild
-  - serverless-bundle
+  # - serverless-bundle
 
 package:
   individually: true
@@ -21,27 +22,16 @@ custom:
   serverless-offline:
     babelOptions:
       presets: ['es2015', 'stage-0']
-  bundle:
-    sourcemaps: true
-    packager: yarn
-    copyFiles: 
-      - from: '.env'
-        to: './'
-      - from: 'graphql/schema.graphql'
-        to: './graphql/'
-    # forceInclude:
-    #   - dotenv
-    #   - node-fetch
-    #   - xml2js
-    #   - csv-parse
-    #   - serverless-dynamodb-client
-    #   - lodash
-    #   - camelcase-keys
-    #   - graphql
-    #   - fs
-    #   - path
-    #   - moment
-    #   - graphql-tools
+  webpack:
+    packager: 'yarn'
+  # bundle:
+  #   sourcemaps: true
+  #   packager: yarn
+  #   copyFiles: 
+  #     - from: '.env'
+  #       to: './'
+  #     - from: 'graphql/schema.graphql'
+  #       to: './graphql/'
 provider:
   name: aws
   lambdaHashingVersion: 20201221
@@ -65,18 +55,21 @@ provider:
 functions:
   export:
     handler: export/handler.handler
-    package:
-      # We're including this file so it will be in the final package of this function only
-      patterns:
-        - utils.js
     events:
       - schedule:
           rate: cron(0 8 * * ? *) # 1am PST
           enabled: true
       - http: post /export
     timeout: 60
+    package:
+      include:
+        - '.env'
   graphql:
     handler: graphql/handler.handler
+    package:
+      include:
+        - '.env'
+        - 'graphql/schema.graphql'
     events:
       - http:
           method: post
