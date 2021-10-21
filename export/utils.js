@@ -1,7 +1,7 @@
-export const findCustomFieldByName = (nodes, name) => {
-  const node = nodes.find(x => x.$.FieldCode === name)
+export const findCustomFieldByName = (fields, name) => {
+  const field = fields.find(obj => obj.CustomFieldValue.FieldCode === name);
 
-  return node ? node.Values[0].Value : null
+  return field ? field.CustomFieldValue.Values[0].Value : null;
 }
 
 export default {}
