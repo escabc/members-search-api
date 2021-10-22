@@ -6,9 +6,6 @@ plugins:
   - serverless-dynamodb-local
   - serverless-webpack
   - serverless-offline
-#  - serverless-build-plugin
-  # - serverless-esbuild
-  # - serverless-bundle
 
 package:
   individually: true
@@ -25,14 +22,6 @@ custom:
   webpack:
     packager: 'yarn'
     includeModules: true # enable auto-packing of external modules
-  # bundle:
-  #   sourcemaps: true
-  #   packager: yarn
-  #   copyFiles: 
-  #     - from: '.env'
-  #       to: './'
-  #     - from: 'graphql/schema.graphql'
-  #       to: './graphql/'
 provider:
   name: aws
   lambdaHashingVersion: 20201221

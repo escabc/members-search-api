@@ -4,7 +4,7 @@
   "description": "API service for Members Search",
   "main": "handler.js",
   "scripts": {
-    "start": "SLS_DEBUG=* sls offline start",
+    "start": "SLS_DEBUG=* sls offline --host 0.0.0.0 --httpPort 4000 --lambdaPort 4002 --noPrependStageInUrl start",
     "db:start": "sls dynamodb start --migrate",
     "db:install": "sls dynamodb install",
     "db:fix": "kill $(lsof -i tcp:8000 | awk 'FNR == 2 {print $2}')",
@@ -16,6 +16,7 @@
     "deploy": "SLS_DEBUG=* NODE_ENV=production sls deploy --stage=${DEPLOY_STAGE:-development}",
     "deploy:production": "NODE_ENV=production sls deploy --stage=production",
     "logs": "sls logs --function=${LOGS_FUNCTION:-graphql} --stage=${LOGS_STAGE:-development} --tail",
+    "logs-export": "sls logs --function=${LOGS_FUNCTION:-export} --stage=${LOGS_STAGE:-development} --tail",
     "copy:graphql": "find src -name \\*.graphql -exec cp {} ./dist/{} \\;",
     "package": "SLS_DEBUG=* sls package",
     "copy:members-schema": "cp graphql/members/members-schema.graphql graphql"
@@ -48,7 +49,7 @@
     "graphql": "15.6.1",
     "lodash": "^4.17.11",
     "moment": "^2.18.1",
-    "node-fetch": "3.0.0",
+    "node-fetch": "2.6.5",
     "path": "^0.12.7",
     "serverless-dynamodb-client": "0.0.2",
     "xml2js": "0.4.23"
