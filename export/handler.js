@@ -61,7 +61,7 @@ const setCustomFields = async item => {
 
   delete itemWithMergedCustomFields.CustomFields
 
-  const itemWithId = { id: item.WebSiteMemberID, ...itemWithMergedCustomFields }
+  const itemWithId = { id: item.WebSiteMemberID.toString(), ...itemWithMergedCustomFields }
   const itemWithoutEmptyProperties = _.omitBy(itemWithId, x => (
     _.isNil(x) || (_.isString(x) && _.isEmpty(x))
   ))
