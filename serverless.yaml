@@ -16,6 +16,8 @@ custom:
       port: 8000
       inMemory: true
       migrate: true
+    stages:
+      - development
   serverless-offline:
     babelOptions:
       presets: ['es2015', 'stage-0']
