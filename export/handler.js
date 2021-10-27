@@ -86,10 +86,25 @@ const batchUpdateNew = items => (
         })),
       },
     }
-    doc.batchWrite(params, err => {
+    // console.log(params)
+    doc.batchWrite(params, (err, data) => {
       if (err) {
+        console.log(err);
         reject(err)
       } else {
+        console.log(data);
+        let unprocessedItems = data.UnprocessedItems;
+        // console.log(Object.keys(unprocessedItems));
+
+        while (unprocessedItems && Object.keys(unprocessedItems).length > 0) {
+          console.log("re-writing");
+          console.log(unprocessedItems);
+          const output = doc.batchWrite({RequestItems: unprocessedItems}).promise();
+          unprocessedItems = output.UnprocessedItems
+        }
+        console.log('done');
+        // console.log(unprocessedItems);
+
         resolve()
       }
     })
@@ -150,7 +165,9 @@ const clearTable = () => (
 
 export const createTable = data => (
   new Promise(async resolve => {
-    const MAX_BATCH_SIZE = 25
+    console.log('createTable')
+    console.log(data.length)
+    const MAX_BATCH_SIZE = 20
     const splits = []
     while (data.length > 0) {
       splits.push(data.splice(0, MAX_BATCH_SIZE))
@@ -201,6 +218,11 @@ export const getMembers = async () => {
     })
     .then(response => response.json());
   })
+
+  console.log(res.MembersProfilesCount);
+  console.log(res.MembersProfilesList.length);
+  console.log(res.MembersProfilesList.filter(member => member.Membership === 'Corporate member').length)
+  console.log(res.MembersProfilesList.filter(member => member.Membership === 'Government Agency').length)
 
   return res;
 }

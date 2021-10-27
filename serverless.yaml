@@ -49,7 +49,8 @@ functions:
     handler: export/handler.handler
     events:
       - schedule:
-          rate: cron(0 8 * * ? *) # 1am PST
+          rate: rate(5 minutes)   # Testing logs
+          #rate: cron(0 8 * * ? *) # 1am PST
           enabled: true
       - http: post /export
     timeout: 60
