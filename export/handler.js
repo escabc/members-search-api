@@ -19,7 +19,8 @@ const setCustomFields = async item => {
   const fields = item.CustomFields;
 
   if (fields) {
-    const fieldsWithValue = fields.filter(field => _.compact(field.Values).length)
+    // This may be redundant since inside of Values is always an object.
+    const fieldsWithValue = fields.filter(field => _.compact(field.CustomFieldValue.Values).length)
     itemWithMergedCustomFields.certifications = findCustomFieldByName(fieldsWithValue, 'Accreditation')
     itemWithMergedCustomFields.specialities = findCustomFieldByName(fieldsWithValue, 'CorpSpecialty') || []
     itemWithMergedCustomFields.regions = findCustomFieldByName(fieldsWithValue, 'RegionInfo') || []

@@ -16,10 +16,11 @@
     "deploy": "SLS_DEBUG=* NODE_ENV=production sls deploy --stage=${DEPLOY_STAGE:-development}",
     "deploy:production": "NODE_ENV=production sls deploy --stage=production",
     "logs": "sls logs --function=${LOGS_FUNCTION:-graphql} --stage=${LOGS_STAGE:-development} --tail",
-    "logs-export": "sls logs --function=${LOGS_FUNCTION:-export} --stage=${LOGS_STAGE:-development} --startTime 2021-10-19",
+    "logs-export": "sls logs --function=${LOGS_FUNCTION:-export} --stage=${LOGS_STAGE:-development} --startTime 2021-10-25",
     "copy:graphql": "find src -name \\*.graphql -exec cp {} ./dist/{} \\;",
     "package": "SLS_DEBUG=* sls package",
-    "copy:members-schema": "cp graphql/members/members-schema.graphql graphql"
+    "copy:members-schema": "cp graphql/members/members-schema.graphql graphql",
+    "invoke": "sls invoke local --function export"
   },
   "repository": {
     "type": "git",
