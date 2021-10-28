@@ -2,6 +2,7 @@ import dotenv from 'dotenv'
 import fetch from 'node-fetch'
 import { doc } from 'serverless-dynamodb-client'
 import _ from 'lodash'
+import moment from 'moment'
 
 import { findCustomFieldByName } from './utils'
 
@@ -186,8 +187,23 @@ export const createTable = data => (
  * @param {JSON} data 
  */
 const populateDatabase = async data => {
+  // Filter out expired members before uploading
+  const members = data.MembersProfilesList.filter(item => {
+    const expiry = moment(item.DateMembershipExpires)
+    const today = moment()
+
+    if (expiry.diff(today, 'days') > -31) {
+      console.log(item.WebSiteMemberID)
+    }
+    return expiry.diff(today, 'days') > -31
+  });
+
+  // console.log(data.MembersProfilesList.length)
+  console.log(members.length);
+  // console.log(members.filter(member => member.Membership === 'Corporate member').length)
+  // console.log(members.filter(member => member.Membership === 'Government Agency').length)
   await clearTable()
-  await createTable(data.MembersProfilesList)
+  await createTable(members)
 };
 
 /**
@@ -219,10 +235,10 @@ export const getMembers = async () => {
     .then(response => response.json());
   })
 
-  console.log(res.MembersProfilesCount);
-  console.log(res.MembersProfilesList.length);
-  console.log(res.MembersProfilesList.filter(member => member.Membership === 'Corporate member').length)
-  console.log(res.MembersProfilesList.filter(member => member.Membership === 'Government Agency').length)
+  // console.log(res.MembersProfilesCount);
+  // console.log(res.MembersProfilesList.length);
+  // console.log(res.MembersProfilesList.filter(member => member.Membership === 'Corporate member').length)
+  // console.log(res.MembersProfilesList.filter(member => member.Membership === 'Government Agency').length)
 
   return res;
 }
