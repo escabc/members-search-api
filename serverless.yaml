@@ -1,11 +1,14 @@
 service: members-search-api
 
-frameworkVersion: ">=1.5.0 <2.0.0"
+frameworkVersion: ">=2.62.0"
 
 plugins:
   - serverless-dynamodb-local
+  - serverless-webpack
   - serverless-offline
-  - serverless-build-plugin
+
+package:
+  individually: true
 
 custom:
   dynamodb:
@@ -13,13 +16,18 @@ custom:
       port: 8000
       inMemory: true
       migrate: true
+    stages:
+      - development
   serverless-offline:
     babelOptions:
       presets: ['es2015', 'stage-0']
-
+  webpack:
+    packager: 'yarn'
+    includeModules: true # enable auto-packing of external modules
 provider:
   name: aws
-  runtime: nodejs6.10
+  lambdaHashingVersion: 20201221
+  runtime: nodejs14.x
   region: us-west-2
   stage: development
   environment:
@@ -41,12 +49,21 @@ functions:
     handler: export/handler.handler
     events:
       - schedule:
+          #rate: rate(5 minutes)   # Testing logs
           rate: cron(0 8 * * ? *) # 1am PST
           enabled: true
       - http: post /export
     timeout: 60
+    package:
+      include:
+        - '.env'
   graphql:
     handler: graphql/handler.handler
+    package:
+      include:
+        - '.env'
+        - 'graphql/schema.graphql'
+        - 'graphql/members-schema.graphql'
     events:
       - http:
           method: post

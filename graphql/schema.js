@@ -1,7 +1,7 @@
-import fs from 'fs'
+import fs from 'fs-extra'
 import { join } from 'path'
 import { merge } from 'lodash'
-import { makeExecutableSchema } from 'graphql-tools'
+import { makeExecutableSchema } from '@graphql-tools/schema'
 
 import { schema as MembersSchema, resolver as MembersResolver } from './members'
 import { queryProfessionalMembers, queryCorporateMembers, queryGovernmentMembers } from './members/model'
