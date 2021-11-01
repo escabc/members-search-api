@@ -10,11 +10,19 @@ export const resolver = {
     name: root => `${root.FirstName} ${root.LastName}`,
     title: root => root.ProfessionalTitle,
     email: root => root.email,
+<<<<<<< HEAD
     website: root => root.EmployerWebsite,
     phone: root => (root.EmployerPhoneAreaCode && root.EmployerPhone ? `${root.EmployerPhoneAreaCode} ${root.EmployerPhone}` : null),
     mobile: root => (root.MobileAreaCode && root.MobilePhone ? `${root.MobileAreaCode} ${root.MobilePhone}` : null),
     fax: root => (root.EmployerFaxAreaCode && root.EmployerFax ? `${root.EmployerFaxAreaCode} ${root.EmployerFax}` : null),
     company: root => root.EmployerName,
+=======
+    website: root => root.employerWebsite,
+    phone: root => (root.employerPhoneAreaCode && root.employerPhone ? `${root.employerPhoneAreaCode} ${root.employerPhone}` : null),
+    mobile: root => (root.mobileAreaCode && root.mobile ? `${root.mobileAreaCode} ${root.mobile}` : null),
+    fax: root => (root.employerFaxAreaCode && root.employerFax ? `${root.employerFaxAreaCode} ${root.employerFax}` : null),
+    company: root => root.employerName,
+>>>>>>> 22feb09df50ea9853720c956d2c9454d15299284
     regions: root => root.regions,
     location: root => ({
       address: root.EmployerAddressLine1,

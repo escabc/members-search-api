@@ -26,7 +26,6 @@ export const queryProfessionalMembers = () => (
         reject(err)
         return
       }
-
       const items = excludeExpiredOver30Days(data.Items.filter(x => x.visible))
       const itemsWithDefaultCertifications = items.map(x => ({
         ...x,
