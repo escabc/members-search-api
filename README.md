@@ -47,6 +47,15 @@ Deploy to AWS Lambda for testing:
 $> yarn run deploy
 ```
 
+When it's completed you'll see this:
+```
+endpoints:
+  POST - https://[somehash].execute-api.us-west-2.amazonaws.com/development/export
+  POST - https://[somehash].execute-api.us-west-2.amazonaws.com/development/graphql
+```
+
+Use the `graphql` endpoint for testing in Postman
+
 Deploy to live AWS Lambda:
 ```sh
 $> yarn run deploy:production
