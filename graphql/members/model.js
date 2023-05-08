@@ -10,33 +10,52 @@ const excludeExpiredOver30Days = items => {
   })
 }
 
-export const queryProfessionalMembers = () => (
-  new Promise((resolve, reject) => {
-    const params = {
-      TableName: process.env.DYNAMODB_MEMBERS_TABLE,
-      FilterExpression: 'Membership <> :corporate and Membership <> :government',
-      ExpressionAttributeValues: {
-        ':corporate': 'Corporate member',
-        ':government': 'Government Agency',
-      },
+
+// With recursion
+export const queryProfessionalMembers = () => {
+  const allItems = [];
+  const params = {
+    TableName: process.env.DYNAMODB_MEMBERS_TABLE,
+    FilterExpression: 'Membership <> :corporate and Membership <> :government',
+    ExpressionAttributeValues: {
+      ':corporate': 'Corporate member',
+      ':government': 'Government Agency',
+    }
+  }
+  
+  const runScan = async ExclusiveStartKey => {
+    if (ExclusiveStartKey) {
+      params.ExclusiveStartKey = ExclusiveStartKey;
     }
 
-    doc.scan(params, (err, data) => {
-      if (err) {
-        reject(err)
-        return
-      }
-      const items = excludeExpiredOver30Days(data.Items.filter(x => x.visible))
-      const itemsWithDefaultCertifications = items.map(x => ({
-        ...x,
-        certifications: x.certifications || [],
-      }))
-      const itemsSortedByName = _.sortBy(itemsWithDefaultCertifications, ['FirstName', 'LastName'])
+    return doc.scan(params).promise()
+      .then(data => {
+        const items = excludeExpiredOver30Days(data.Items.filter(x => x.visible))
+        const itemsWithDefaultCertifications = items.map(x => ({
+          ...x,
+          certifications: x.certifications || [],
+        }))
+        const itemsSortedByName = _.sortBy(itemsWithDefaultCertifications, ['FirstName', 'LastName'])
+        
+        itemsSortedByName.forEach(item => {
+          allItems.push(item);
+        });
 
-      resolve(itemsSortedByName)
-    })
-  })
-)
+        if (!data.LastEvaluatedKey) {
+          return allItems;
+        }
+        
+        return runScan(data.LastEvaluatedKey);
+      })
+      .catch(err => {
+        log.error(err);
+        throw new Error('Error retrieving data');
+      })
+  }
+
+  return runScan();
+}
+
 
 export const queryCorporateMembers = () => (
   new Promise((resolve, reject) => {
