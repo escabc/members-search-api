@@ -34,7 +34,24 @@ node_modules
 
 .env
 .serverless/
+.dynamodb
 
 # Local files to export CSV from Your Membership
 /local
 .DS_Store
+/export-local
+/export-old
+
+# Local files for docker
+.aws
+
+# Temporary files copied files for serverless-copy-webpack-plugin
+/graphql/members-schema.graphql
+
+
+# Sensitive files
+credentials*
+
+#Temp folders
+.webpack
+

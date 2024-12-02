@@ -4,7 +4,7 @@
   "description": "API service for Members Search",
   "main": "handler.js",
   "scripts": {
-    "start": "sls offline start",
+    "start": "SLS_DEBUG=* sls offline --host 0.0.0.0 --httpPort 4000 --lambdaPort 4002 --noPrependStageInUrl start",
     "db:start": "sls dynamodb start --migrate",
     "db:install": "sls dynamodb install",
     "db:fix": "kill $(lsof -i tcp:8000 | awk 'FNR == 2 {print $2}')",
@@ -12,11 +12,15 @@
     "test:lint": "eslint .",
     "test:unit": "NODE_ENV=test ava tests/unit/**/*.test.js",
     "test:integration": "NODE_ENV=test ava --serial --fail-fast tests/integration/**/*.test.js",
-    "test:deploy": "NODE_ENV=production sls --stage=${DEPLOY_STAGE:-development} --no-deploy deploy",
-    "deploy": "NODE_ENV=production sls --stage=${DEPLOY_STAGE:-development} deploy",
-    "deploy:production": "NODE_ENV=production sls --stage=production deploy",
+    "test:deploy": "NODE_ENV=production sls deploy --stage=${DEPLOY_STAGE:-development} --no-deploy ",
+    "deploy": "SLS_DEBUG=* NODE_ENV=production sls deploy --stage=${DEPLOY_STAGE:-development}",
+    "deploy:production": "NODE_ENV=production sls deploy --stage=production",
     "logs": "sls logs --function=${LOGS_FUNCTION:-graphql} --stage=${LOGS_STAGE:-development} --tail",
-    "copy:graphql": "find src -name \\*.graphql -exec cp {} ./dist/{} \\;"
+    "logs-export": "sls logs --function=${LOGS_FUNCTION:-export} --stage=${LOGS_STAGE:-development} --startTime 2021-10-25",
+    "copy:graphql": "find src -name \\*.graphql -exec cp {} ./dist/{} \\;",
+    "package": "SLS_DEBUG=* sls package",
+    "copy:members-schema": "cp graphql/members/members-schema.graphql graphql",
+    "invoke": "sls invoke local --function export"
   },
   "repository": {
     "type": "git",
@@ -29,37 +33,51 @@
   },
   "homepage": "https://github.com/escabc/members-search-api#readme",
   "ava": {
-    "require": "babel-register",
-    "babel": "inherit"
+    "require": [
+      "@babel/register"
+    ],
+    "babel": true
   },
   "dependencies": {
+    "@babel/runtime": "^7.15.4",
+    "@graphql-tools/schema": "^8.3.0",
     "babel-polyfill": "^6.23.0",
-    "camelcase-keys": "4.1.0",
-    "csv-parse": "1.2.0",
-    "dotenv": "4.0.0",
-    "graphql": "0.9.5",
-    "graphql-tools": "0.11.0",
-    "lodash": "^4.17.13",
+    "camelcase-keys": "7.0.1",
+    "csv-parse": "4.16.3",
+    "dotenv": "10.0.0",
+    "fs": "^0.0.1-security",
+    "fs-extra": "^10.0.0",
+    "graphql": "15.6.1",
+    "lodash": "^4.17.11",
     "moment": "^2.18.1",
-    "node-fetch": "1.6.3",
+    "node-fetch": "2.6.5",
+    "path": "^0.12.7",
     "serverless-dynamodb-client": "0.0.2",
-    "xml2js": "0.4.17"
+    "xml2js": "0.4.23"
   },
   "devDependencies": {
-    "ava": "0.19.1",
-    "babel-eslint": "7.2.3",
-    "babel-plugin-add-module-exports": "0.2.1",
+    "@ava/babel": "^2.0.0",
+    "@babel/core": "^7.15.8",
+    "@babel/eslint-parser": "^7.15.8",
+    "@babel/plugin-transform-runtime": "^7.15.8",
+    "@babel/preset-env": "^7.15.8",
+    "@babel/register": "^7.15.3",
+    "ava": "3.15.0",
+    "babel-loader": "^8.2.3",
+    "babel-plugin-add-module-exports": "1.0.4",
     "babel-plugin-transform-runtime": "6.23.0",
     "babel-preset-es2015": "6.24.1",
     "babel-preset-stage-0": "6.24.1",
-    "eslint": "3.19.0",
-    "eslint-config-airbnb": "14.1.0",
-    "eslint-plugin-import": "2.2.0",
-    "eslint-plugin-jsx-a11y": "4.0.0",
-    "eslint-plugin-react": "6.10.3",
-    "serverless": "1.12.1",
-    "serverless-build-plugin": "1.2.0",
-    "serverless-dynamodb-local": "0.2.21",
-    "serverless-offline": "3.13.5"
+    "eslint": "8.0.1",
+    "eslint-config-airbnb": "18.2.1",
+    "eslint-plugin-import": "2.25.2",
+    "eslint-plugin-jsx-a11y": "6.4.1",
+    "eslint-plugin-react": "7.26.1",
+    "serverless": "2.62.0",
+    "serverless-bundle": "^5.0.2",
+    "serverless-copy-webpack-plugin": "^1.1.0",
+    "serverless-dynamodb-local": "0.2.40",
+    "serverless-offline": "8.2.0",
+    "serverless-webpack": "^5.5.5"
   }
 }

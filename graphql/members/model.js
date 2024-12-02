@@ -2,48 +2,66 @@ import { doc } from 'serverless-dynamodb-client'
 import _ from 'lodash'
 import moment from 'moment'
 
-const excludeExpiredOver30Days = (items) => {
+const excludeExpiredOver30Days = items => {
   return items.filter(item => {
-    const expiry = moment(item.dateMembershipExpires);
-    const today = moment();
-    return expiry.diff(today, 'days') > -31;
-  });
+    const expiry = moment(item.DateMembershipExpires)
+    const today = moment()
+    return expiry.diff(today, 'days') > -31
+  })
 }
 
-export const queryProfessionalMembers = () => (
-  new Promise((resolve, reject) => {
-    const params = {
-      TableName: process.env.DYNAMODB_MEMBERS_TABLE,
-      FilterExpression: 'membership <> :corporate and membership <> :government',
-      ExpressionAttributeValues: {
-        ':corporate': 'Corporate member',
-        ':government': 'Government Agency',
-      },
+
+// With recursion
+export const queryProfessionalMembers = () => {
+  const allItems = [];
+  const params = {
+    TableName: process.env.DYNAMODB_MEMBERS_TABLE,
+    FilterExpression: 'Membership <> :corporate and Membership <> :government',
+    ExpressionAttributeValues: {
+      ':corporate': 'Corporate member',
+      ':government': 'Government Agency',
+    }
+  }
+  
+  const runScan = async ExclusiveStartKey => {
+    if (ExclusiveStartKey) {
+      params.ExclusiveStartKey = ExclusiveStartKey;
     }
 
-    doc.scan(params, (err, data) => {
-      if (err) {
-        reject(err)
-        return
-      }
-      
-      const items = excludeExpiredOver30Days(data.Items.filter(x => x.visible))
-      const itemsWithDefaultCertifications = items.map(x => ({
-        ...x,
-        certifications: x.certifications || [],
-      }))
-      const itemsSortedByName = _.sortBy(itemsWithDefaultCertifications, ['firstName', 'lastName'])
+    return doc.scan(params).promise()
+      .then(data => {
+        const items = excludeExpiredOver30Days(data.Items.filter(x => x.visible))
+        const itemsWithDefaultCertifications = items.map(x => ({
+          ...x,
+          certifications: x.certifications || [],
+        }))
+        const itemsSortedByName = _.sortBy(itemsWithDefaultCertifications, ['FirstName', 'LastName'])
+        
+        itemsSortedByName.forEach(item => {
+          allItems.push(item);
+        });
 
-      resolve(itemsSortedByName)
-    })
-  })
-)
+        if (!data.LastEvaluatedKey) {
+          return allItems;
+        }
+        
+        return runScan(data.LastEvaluatedKey);
+      })
+      .catch(err => {
+        log.error(err);
+        throw new Error('Error retrieving data');
+      })
+  }
+
+  return runScan();
+}
+
 
 export const queryCorporateMembers = () => (
   new Promise((resolve, reject) => {
     const params = {
       TableName: process.env.DYNAMODB_MEMBERS_TABLE,
-      FilterExpression: 'membership = :corporate',
+      FilterExpression: 'Membership = :corporate',
       ExpressionAttributeValues: {
         ':corporate': 'Corporate member',
       },
@@ -56,7 +74,7 @@ export const queryCorporateMembers = () => (
       }
 
       const items = excludeExpiredOver30Days(data.Items)
-      const itemsSortedByName = _.sortBy(items, 'employerName')
+      const itemsSortedByName = _.sortBy(items, 'EmployerName')
 
       resolve(itemsSortedByName)
     })
@@ -67,7 +85,7 @@ export const queryGovernmentMembers = () => (
   new Promise((resolve, reject) => {
     const params = {
       TableName: process.env.DYNAMODB_MEMBERS_TABLE,
-      FilterExpression: 'membership = :government',
+      FilterExpression: 'Membership = :government',
       ExpressionAttributeValues: {
         ':government': 'Government Agency',
       },
@@ -80,7 +98,7 @@ export const queryGovernmentMembers = () => (
       }
 
       const items = excludeExpiredOver30Days(data.Items)
-      const itemsSortedByName = _.sortBy(items, 'employerName')
+      const itemsSortedByName = _.sortBy(items, 'EmployerName')
 
       resolve(itemsSortedByName)
     })
@@ -91,7 +109,7 @@ export const queryMembersByCompany = company => (
   new Promise((resolve, reject) => {
     const params = {
       TableName: process.env.DYNAMODB_MEMBERS_TABLE,
-      FilterExpression: 'employerName = :company',
+      FilterExpression: 'EmployerName = :company',
       ExpressionAttributeValues: {
         ':company': company,
       },
